@@ -9,7 +9,6 @@ namespace avto
     class Avto
     {
         protected string nomerAvto;
-        protected double kolichestvoBenzina;
         protected double rashodTopliva;
         protected double ostatokTopliva;
         protected double skorost;
@@ -18,7 +17,6 @@ namespace avto
         public Avto(string nom, double bak, double ras)
         {
             nomerAvto = nom;
-            kolichestvoBenzina = bak;
             rashodTopliva = ras;
             ostatokTopliva = bak;
             skorost = 0.0;
@@ -28,7 +26,6 @@ namespace avto
         public void Info(string nom, double bak, double ras)
         {
             nomerAvto = nom;
-            kolichestvoBenzina = bak;
             rashodTopliva = ras;
             ostatokTopliva = bak;
             skorost = 0.0;
@@ -38,35 +35,34 @@ namespace avto
         public virtual void Out()
         {
             Console.WriteLine($"Номер авто: {nomerAvto}");
-            Console.WriteLine($"Количество бензина в баке: {ostatokTopliva} л");
+            Console.WriteLine($"Количество бензина в баке: {Math.Round(ostatokTopliva, 2)} л");
             Console.WriteLine($"Расход топлива на 100 км: {rashodTopliva} л/100км");
             Console.WriteLine($"Текущая скорость: {skorost} км/ч");
             Console.WriteLine($"Ваш пробег: {probeg} км");
         }
 
         public void Zapravka(double top)
+
         {
             if (top <= 0)
             {
                 Console.WriteLine("Количество топлива должно быть больше нуля.");
-                return;
+
             }
-
-            double availableSpace = 80.0 - kolichestvoBenzina;
-
-            if (top > availableSpace)
+            if (top + ostatokTopliva >= 80)
             {
-                Console.WriteLine($"Нельзя заправить бак более чем на {availableSpace:F2} литров.");
-                return;
+                Console.WriteLine("Больше бензина залить нельзя");
+                ostatokTopliva = 80;
             }
+            else
+            {
+                ostatokTopliva += top;
+                Console.WriteLine($"Заправлено {top:F2} литров топлива. В баке теперь {ostatokTopliva:F2} литров топлива.");
 
-            kolichestvoBenzina += top;
-            ostatokTopliva += top;
-
-            Console.WriteLine($"Заправлено {top:F2} литров топлива. В баке теперь {ostatokTopliva:F2} литров топлива.");
+            }
         }
 
-        public void Move(int speed, int distance)
+        public void Move(int speed, double distance)
         {
             if (speed <= 0)
             {
@@ -80,8 +76,7 @@ namespace avto
                 speed = 190;
             }
 
-
-            double time = (double)distance / speed;
+            double time = distance / speed;
             double rashodToplivaNaKm = rashodTopliva / 100;
             double rashod = distance * rashodToplivaNaKm;
 
@@ -92,11 +87,9 @@ namespace avto
                 Console.WriteLine($"Проехано {distance} км со скоростью {speed} км/ч c временем {time:F2} ч. Остаток топлива: {ostatokTopliva:F2} л");
                 skorost = speed;
             }
-
             else
-
             {
-                int maxDistance = (int)(ostatokTopliva / rashodToplivaNaKm);
+                double maxDistance = ostatokTopliva / rashodToplivaNaKm;
 
                 if (maxDistance > 0)
                 {
@@ -105,30 +98,43 @@ namespace avto
                     probeg += maxDistance;
                     Console.WriteLine("Машина проехала максимальное расстояние с текущим количеством топлива.");
 
+                    double neededFuel = rashod - ostatokTopliva;
+                    Console.WriteLine($"Для дозаправки требуется {neededFuel:F2} литров топлива.");
+
                     Console.Write("Желаете дозаправить машину? (Да/Нет): ");
                     string choice = Console.ReadLine();
                     if (choice.ToLower() == "да")
                     {
-                        Console.Write("Введите количество топлива для дозаправки: ");
+                        Console.Write("Введите желаемое количество топлива для дозаправки: ");
                         double topUpAmount = double.Parse(Console.ReadLine());
-                        Zapravka(topUpAmount);
-                        Console.WriteLine($"Машина дозаправлена на {topUpAmount:F2} л.");
+
+                        if (topUpAmount > 0)
+                        {
+                            if (topUpAmount >= neededFuel)
+                            {
+                                ostatokTopliva = topUpAmount;
+                                Console.WriteLine($"Заправлено {neededFuel:F2} литров топлива. В баке теперь {ostatokTopliva:F2} литров топлива.");
+                            }
+                            else
+                            {
+                                Console.WriteLine($"Введенное количество топлива недостаточно для полной дозаправки.");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Неправильное количество топлива. Введите положительное число.");
+                        }
+
                         Move(speed, distance - maxDistance);
                     }
                 }
-
                 else
-
                 {
                     Console.WriteLine("Недостаточно топлива для поездки.");
                 }
             }
         }
 
-        private double Ostatok()
-        {
-            return ostatokTopliva;
-        }
 
         public void Tormozhenie()
         {
@@ -151,18 +157,23 @@ namespace avto
             }
         }
 
-        private void proydennoerast(int distance)
-        {
-            this.probeg += distance;
-        }
-
-        public bool CheckCollision(int roadDistance, double totalDistance)
+        public bool CheckDTP(int roadDistance, double totalDistance)
         {
             if (totalDistance >= roadDistance)
             {
                 return true;
             }
             return false;
+        }
+
+        private void proydennoerast(int distance)
+        {
+            this.probeg += distance;
+        }
+
+        private double Ostatok()
+        {
+            return ostatokTopliva;
         }
     }
 }

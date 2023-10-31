@@ -10,29 +10,34 @@ class Program
         int roadDistance = int.Parse(Console.ReadLine());
         double totalDistance = 0;
 
-        Console.WriteLine("Выберите тип автотранспорта:");
-        Console.WriteLine("1 - Автобус");
-        Console.WriteLine("2 - Фура");
-        int vehicleChoice = int.Parse(Console.ReadLine());
-
-        Avto selectedVehicle;
-
-        if (vehicleChoice == 1)
-        {
-            selectedVehicle = new Bus("Bus", 100.0, 15.0, 0);
-        }
-        else if (vehicleChoice == 2)
-        {
-            selectedVehicle = new Autotruck("Autotruck", 200.0, 20.0, 0);
-        }
-        else
-        {
-            Console.WriteLine("Неверный выбор автотранспорта. Программа завершена.");
-            return;
-        }
+        Avto selectedVehicle = null;
 
         while (totalDistance < roadDistance)
         {
+            if (selectedVehicle == null)
+            {
+                Console.WriteLine("Выберите тип автотранспорта:");
+                Console.WriteLine("1 - Автобус");
+                Console.WriteLine("2 - Фура");
+                int vehicleChoice = int.Parse(Console.ReadLine());
+
+                if (vehicleChoice == 1)
+                {
+                    selectedVehicle = new Bus("Bus", 80, 15.0, 0);
+                }
+                else if (vehicleChoice == 2)
+                {
+                    selectedVehicle = new Autotruck("Autotruck", 80, 20.0, 0);
+                }
+                else
+                {
+                    Console.WriteLine("Неверный выбор автотранспорта. Попробуйте снова.");
+                    continue;
+                }
+            }
+
+            Console.WriteLine($"Выбран автотранспорт: {selectedVehicle.GetType().Name}");
+
             Console.WriteLine("Выберите действие:");
             Console.WriteLine("1 - Поехать");
             Console.WriteLine("2 - Разогнать автомобиль");
@@ -41,7 +46,8 @@ class Program
             Console.WriteLine("5 - Вывести информацию");
             Console.WriteLine("6 - Загрузить пассажиров или груз");
             Console.WriteLine("7 - Высадить пассажиров или разгрузить груз");
-            Console.WriteLine("8 - Выход");
+            Console.WriteLine("8 - Выбрать другой автотранспорт");
+            Console.WriteLine("9 - Выход");
             int choice = int.Parse(Console.ReadLine());
 
             switch (choice)
@@ -50,7 +56,7 @@ class Program
                     Console.Write("Введите скорость для поездки (в км/ч): ");
                     int speed = int.Parse(Console.ReadLine());
                     Console.Write("Введите расстояние: ");
-                    int distance = int.Parse(Console.ReadLine());
+                    double distance = double.Parse(Console.ReadLine());
                     selectedVehicle.Move(speed, distance);
                     totalDistance += distance;
                     break;
@@ -114,6 +120,10 @@ class Program
                     break;
 
                 case 8:
+                    selectedVehicle = null;
+                    break;
+
+                case 9:
                     Console.WriteLine("Программа завершена.");
                     return;
 
@@ -122,10 +132,13 @@ class Program
                     break;
             }
 
-            if (selectedVehicle.CheckCollision(roadDistance, totalDistance))
+            if (selectedVehicle != null)
             {
-                Console.WriteLine("Авария!");
-                return;
+                if (selectedVehicle.CheckDTP(roadDistance, totalDistance))
+                {
+                    Console.WriteLine("Авария!");
+                    return;
+                }
             }
         }
     }
