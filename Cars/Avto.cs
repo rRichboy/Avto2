@@ -94,31 +94,31 @@ namespace avto
                     double neededFuel = rashod - ostatokTopliva;
                     Console.WriteLine($"Для дозаправки требуется {neededFuel:F2} литров топлива.");
 
-                    Console.Write("Желаете дозаправить машину? (Да/Нет): ");
-                    string choice = Console.ReadLine();
-                    if (choice.ToLower() == "да")
+                    if (neededFuel > 0)
                     {
-                        Console.Write("Введите желаемое количество топлива для дозаправки: ");
-                        double topUpAmount = double.Parse(Console.ReadLine());
-
-                        if (topUpAmount > 0)
+                        Console.Write("Желаете дозаправить машину? (Да/Нет): ");
+                        string choice = Console.ReadLine();
+                        if (choice.ToLower() == "да")
                         {
-                            if (topUpAmount >= neededFuel)
+                            Console.Write($"Введите желаемое количество топлива для дозаправки (максимум {ostatokTopliva:F2} литров): ");
+                            double topUpAmount = double.Parse(Console.ReadLine());
+
+                            if (topUpAmount > 0 && topUpAmount <= neededFuel)
                             {
-                                ostatokTopliva = topUpAmount;
-                                Console.WriteLine($"Заправлено {neededFuel:F2} литров топлива. В баке теперь {ostatokTopliva:F2} литров топлива.");
+                                ostatokTopliva += topUpAmount;
+                                Console.WriteLine($"Заправлено {topUpAmount:F2} литров топлива. В баке теперь {ostatokTopliva:F2} литров топлива.");
+                            }
+                            else if (topUpAmount > neededFuel)
+                            {
+                                Console.WriteLine("Бак был заправлен полностью.");
                             }
                             else
                             {
-                                Console.WriteLine($"Введенное количество топлива недостаточно для полной дозаправки.");
+                                Console.WriteLine("Неправильное количество топлива. Введите положительное число.");
                             }
-                        }
-                        else
-                        {
-                            Console.WriteLine("Неправильное количество топлива. Введите положительное число.");
-                        }
 
-                        Move(speed, distance - maxDistance);
+                            Move(speed, distance - maxDistance);
+                        }
                     }
                 }
                 else
@@ -127,6 +127,7 @@ namespace avto
                 }
             }
         }
+
 
         protected void Tormozhenie()
         {
