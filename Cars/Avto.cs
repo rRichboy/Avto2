@@ -1,8 +1,4 @@
-﻿﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 
 namespace avto
 {
@@ -41,13 +37,11 @@ namespace avto
             Console.WriteLine($"Ваш пробег: {probeg} км");
         }
 
-        public void Zapravka(double top)
-
+        protected void Zapravka(double top)
         {
             if (top <= 0)
             {
                 Console.WriteLine("Количество топлива должно быть больше нуля.");
-
             }
             if (top + ostatokTopliva >= 80)
             {
@@ -58,11 +52,10 @@ namespace avto
             {
                 ostatokTopliva += top;
                 Console.WriteLine($"Заправлено {top:F2} литров топлива. В баке теперь {ostatokTopliva:F2} литров топлива.");
-
             }
         }
 
-        public void Move(int speed, double distance)
+        protected void Move(int speed, double distance)
         {
             if (speed <= 0)
             {
@@ -135,14 +128,13 @@ namespace avto
             }
         }
 
-
-        public void Tormozhenie()
+        protected void Tormozhenie()
         {
             Console.WriteLine("Автомобиль замедляется.");
             skorost = 0.0;
         }
 
-        public void Razgon(int additionalSpeed)
+        protected void Razgon(int additionalSpeed)
         {
             if (ostatokTopliva >= 1.0)
             {
@@ -157,7 +149,7 @@ namespace avto
             }
         }
 
-        public bool CheckDTP(int roadDistance, double totalDistance)
+        protected bool CheckDTP(int roadDistance, double totalDistance)
         {
             if (totalDistance >= roadDistance)
             {
@@ -166,14 +158,51 @@ namespace avto
             return false;
         }
 
-        private void proydennoerast(int distance)
+        protected void Proydennoerast(int distance)
         {
             this.probeg += distance;
         }
 
-        private double Ostatok()
+        protected double Ostatok()
         {
             return ostatokTopliva;
+        }
+
+        public void PerformAction(string action, int param1, double param2, double param3)
+        {
+            switch (action.ToLower())
+            {
+                case "info":
+                    Info(nomerAvto, ostatokTopliva, rashodTopliva);
+                    break;
+                case "out":
+                    Out();
+                    break;
+                case "zapravka":
+                    Zapravka(param3);
+                    break;
+                case "move":
+                    Move(param1, param2);
+                    break;
+                case "tormozhenie":
+                    Tormozhenie();
+                    break;
+                case "razgon":
+                    Razgon(param1);
+                    break;
+                case "checkdtp":
+                    CheckDTP(param1, param2);
+                    break;
+                case "proydennoerast":
+                    Proydennoerast(param1);
+                    break;
+                case "ostatok":
+                    Ostatok();
+                    break;
+                default:
+                    Console.WriteLine("Такое.");
+                    break;
+            }
         }
     }
 }

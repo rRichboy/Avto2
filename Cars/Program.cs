@@ -57,28 +57,28 @@ class Program
                     int speed = int.Parse(Console.ReadLine());
                     Console.Write("Введите расстояние: ");
                     double distance = double.Parse(Console.ReadLine());
-                    selectedVehicle.Move(speed, distance);
+                    selectedVehicle.PerformAction("move", speed, distance, 0);
                     totalDistance += distance;
                     break;
 
                 case 2:
                     Console.Write("Введите скорость для разгона (в км/ч): ");
                     int additionalSpeed = int.Parse(Console.ReadLine());
-                    selectedVehicle.Razgon(additionalSpeed);
+                    selectedVehicle.PerformAction("razgon", additionalSpeed, 0, 0);
                     break;
 
                 case 3:
-                    selectedVehicle.Tormozhenie();
+                    selectedVehicle.PerformAction("tormozhenie", 0, 0, 0);
                     break;
 
                 case 4:
                     Console.Write("Введите количество бензина для заправки (в литрах): ");
                     double top = double.Parse(Console.ReadLine());
-                    selectedVehicle.Zapravka(top);
+                    selectedVehicle.PerformAction("zapravka", 0, 0, top);
                     break;
 
                 case 5:
-                    selectedVehicle.Out();
+                    selectedVehicle.PerformAction("out", 0, 0, 0);
                     break;
 
                 case 6:
@@ -134,11 +134,7 @@ class Program
 
             if (selectedVehicle != null)
             {
-                if (selectedVehicle.CheckDTP(roadDistance, totalDistance))
-                {
-                    Console.WriteLine("Авария!");
-                    return;
-                }
+                selectedVehicle.PerformAction("checkdtp", roadDistance, totalDistance, 1);
             }
         }
     }
